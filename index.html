@@ -27,5 +27,158 @@ $('logoutBtn').onclick=()=>{accessToken=null;allOrders=[];allPerfumes=[];$('dash
 $('refreshBtn').onclick=refreshData;$('searchOrder').addEventListener('input',renderOrders);$('statusFilter').addEventListener('change',renderOrders);
 async function refreshData(){ $('dataError').textContent='';$('refreshBtn').disabled=true;try{const [ps,os]=await Promise.all([api('/rest/v1/perfumes?select=id,name,brand,price,stock&order=name.asc'),api('/rest/v1/orders?select=id,order_number,customer_name,phone,commune,delivery_method,address,status,total,items,created_at&order=created_at.desc')]);allPerfumes=ps||[];allOrders=os||[];renderProducts();renderOrders();$('kProducts').textContent=allPerfumes.length;$('kStock').textContent=allPerfumes.reduce((s,p)=>s+Number(p.stock||0),0);$('kOrders').textContent=allOrders.length;$('kRevenue').textContent=money(allOrders.filter(o=>!['cancelled','Annulée','annulee'].includes(o.status)).reduce((s,o)=>s+Number(o.total||0),0));$('lastUpdated').textContent='Dernière actualisation : '+new Date().toLocaleString('fr-FR')}catch(err){$('dataError').textContent='Impossible de charger les données : '+err.message+'\nSi une erreur 401/403 apparaît, vérifie la politique RLS et que ton compte est autorisé à consulter les commandes.'}finally{$('refreshBtn').disabled=false}}
 function renderProducts(){ $('productsRows').innerHTML=allPerfumes.length?allPerfumes.map(p=>{let stock=Number(p.stock||0);return `<tr><td><strong>${esc(p.name)}</strong></td><td>${esc(p.brand||'—')}</td><td>${money(p.price)}</td><td><strong>${stock}</strong></td><td><span class="status ${stock===0?'low':stock<=3?'low':'good'}">${stock===0?'Épuisé':stock<=3?'Stock faible':'Disponible'}</span></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">Aucun parfum dans Supabase.</td></tr>'}
-function renderOrders(){const q=$('searchOrder').value.trim().toLowerCase(),st=$('statusFilter').value;const filtered=allOrders.filter(o=>{const hay=[o.order_number,o.id,o.customer_name,o.phone,o.commune].join(' ').toLowerCase();return (!q||hay.includes(q))&&(st==='all'||o.status===st)});$('ordersCount').textContent=filtered.length+' commande(s) affichée(s)';$('ordersRows').innerHTML=filtered.length?filtered.map(o=>{let items=Array.isArray(o.items)?o.items:[];const num=o.order_number||('CMD-'+o.id);const delivery=o.delivery_method==='home'?'À domicile':'Retrait';return `<tr><td><strong>${esc(num)}</strong><br><span class="muted">${esc(new Date(o.created_at).toLocaleString('fr-FR'))}</span></td><td><strong>${esc(o.customer_name)}</strong><br>${esc(o.phone)}<br><span class="muted">${esc(o.commune)}</span></td><td>${delivery}${o.address?'<br><span class="muted">'+esc(o.address)+'</span>':''}</td><td class="orderitems">${items.map(i=>esc(i.name)+' × '+Number(i.qty||0)).join('<br>')||'—'}</td><td><strong>${money(o.total)}</strong></td><td><span class="status">${esc(prettyStatus(o.status))}</span></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">Aucune commande ne correspond aux filtres.</td></tr>'}
+function renderOrders() {
+  const q = $('searchOrder').value.trim().toLowerCase();
+  const st = $('statusFilter').value;
+
+  const statuses = [
+    ['pending', 'En attente'],
+    ['received', 'Reçue'],
+    ['confirmed', 'Confirmée'],
+    ['preparing', 'En préparation'],
+    ['shipped', 'Expédiée'],
+    ['ready_for_pickup', 'Prête au retrait'],
+    ['delivered', 'Livrée'],
+    ['cancelled', 'Annulée']
+  ];
+
+  const filtered = allOrders.filter(o => {
+    const hay = [
+      o.order_number, o.id, o.customer_name,
+      o.phone, o.commune
+    ].join(' ').toLowerCase();
+
+    return (!q || hay.includes(q)) &&
+      (st === 'all' || o.status === st);
+  });
+
+  $('ordersCount').textContent =
+    filtered.length + ' commande(s) affichée(s)';
+
+  $('ordersRows').innerHTML = filtered.length
+    ? filtered.map(o => {
+        const items = Array.isArray(o.items) ? o.items : [];
+        const num = o.order_number || ('CMD-' + o.id);
+        const delivery =
+          o.delivery_method === 'home' ? 'À domicile' : 'Retrait';
+
+        const options = statuses.map(([value, label]) =>
+          `<option value="${value}" ${
+            o.status === value ? 'selected' : ''
+          }>${label}</option>`
+        ).join('');
+
+        return `
+          <tr data-order-id="${esc(o.id)}">
+            <td>
+              <strong>${esc(num)}</strong><br>
+              <span class="muted">
+                ${esc(new Date(o.created_at).toLocaleString('fr-FR'))}
+              </span>
+            </td>
+            <td>
+              <strong>${esc(o.customer_name)}</strong><br>
+              ${esc(o.phone)}<br>
+              <span class="muted">${esc(o.commune)}</span>
+            </td>
+            <td>
+              ${delivery}
+              ${o.address
+                ? '<br><span class="muted">' +
+                  esc(o.address) + '</span>'
+                : ''}
+            </td>
+            <td class="orderitems">
+              ${items.map(i =>
+                esc(i.name) + ' × ' + Number(i.qty || 0)
+              ).join('<br>') || '—'}
+            </td>
+            <td><strong>${money(o.total)}</strong></td>
+            <td>
+              <span class="status">
+                ${esc(prettyStatus(o.status))}
+              </span>
+              <div style="margin-top:8px">
+                <select class="order-status-select"
+                        aria-label="Nouveau statut de la commande">
+                  ${options}
+                </select>
+                <button type="button"
+                        onclick="updateOrderStatus(this)"
+                        style="margin-top:6px">
+                  Enregistrer
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('')
+    : '<tr><td colspan="6" class="empty">' +
+      'Aucune commande ne correspond aux filtres.</td></tr>';
+}
+async function updateOrderStatus(button) {
+  const row = button.closest('tr');
+  const orderId = row?.dataset.orderId;
+  const select = row?.querySelector('.order-status-select');
+
+  if (!orderId || !select) {
+    alert('Impossible de trouver la commande.');
+    return;
+  }
+
+  const newStatus = select.value;
+  const previousText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = 'Enregistrement...';
+
+  try {
+    const result = await api(
+      '/rest/v1/orders?id=eq.' + encodeURIComponent(orderId),
+      {
+        method: 'PATCH',
+        headers: {
+          Prefer: 'return=representation'
+        },
+        body: JSON.stringify({
+          status: newStatus
+        })
+      }
+    );
+
+    if (!Array.isArray(result) || result.length === 0) {
+      throw new Error(
+        'Aucune commande modifiée. Vérifie les autorisations UPDATE dans Supabase.'
+      );
+    }
+
+    const index = allOrders.findIndex(
+      o => String(o.id) === String(orderId)
+    );
+
+    if (index !== -1) {
+      allOrders[index] = {
+        ...allOrders[index],
+        ...result[0]
+      };
+    }
+
+    renderOrders();
+
+    alert(
+      'Statut mis à jour : ' + prettyStatus(newStatus)
+    );
+
+  } catch (err) {
+    alert(
+      'Erreur : ' + err.message +
+      '\nVérifie les permissions UPDATE dans Supabase.'
+    );
+
+    button.disabled = false;
+    button.textContent = previousText;
+  }
+}
+
+
 </script></body></html>

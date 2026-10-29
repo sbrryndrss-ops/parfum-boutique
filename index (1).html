@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parfum Boutique</title>
+<style>
+:root{--wine:#642d46;--rose:#f6edf1;--ink:#211a22;--muted:#746b75;--line:#eadfe4;--green:#24764e;--red:#a53b45;--gold:#c4a36b}*{box-sizing:border-box}body{margin:0;background:#f8f5f4;color:var(--ink);font:15px Arial,sans-serif}button,input,select{font:inherit}button{border:0;border-radius:9px;padding:10px 14px;background:var(--wine);color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button.secondary{background:#fff;color:var(--wine);border:1px solid var(--line)}input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+header{background:var(--wine);color:#fff;padding:22px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.brand{font:26px Georgia,serif}.brand small{display:block;font:12px Arial;opacity:.8;margin-top:5px}
+header button{background:#fff;color:var(--wine)}#cartCount{display:inline-block;min-width:22px;padding:1px 7px;margin-left:6px;border-radius:12px;background:var(--wine);color:#fff;font-size:12px;text-align:center}
+main{max-width:1180px;margin:24px auto;padding:0 18px}.toolbar{margin-bottom:16px}.muted{color:var(--muted);font-size:13px}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;align-content:start}.card h3{font:20px Georgia,serif;margin:0}.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{background:#fff;color:var(--wine);border:1px solid var(--line);padding:7px 11px;font-size:13px}.chip.active{background:var(--wine);color:#fff;border-color:var(--wine)}.chip.out{text-decoration:line-through;opacity:.65}.price{font:22px Georgia,serif;color:var(--wine)}
+.badge{display:inline-block;border-radius:20px;padding:4px 9px;font-size:11px;font-weight:bold}.badge.good{background:#e7f5eb;color:#22623f}.badge.low{background:#fff0d7;color:#7b4c00}.badge.out{background:#fbe1e3;color:#9b2332}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0008;z-index:9999;overflow:auto;padding:20px}.modal-card{max-width:640px;margin:30px auto;padding:24px;background:#fff;border:1px solid var(--line);border-radius:14px}.mhead{display:flex;justify-content:space-between;align-items:center;gap:12px}.mhead h2{font:24px Georgia,serif;margin:0}
+.line{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}.line .qty{display:flex;gap:6px;align-items:center;margin-top:6px}.line .qty button{padding:5px 10px}.total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;color:var(--wine);padding:14px 0}
+.form{display:grid;gap:12px;margin-top:6px}.form label{display:grid;gap:6px;font-size:13px;color:var(--muted)}.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.done{text-align:center;padding:20px 6px}.done .num{font:26px Georgia,serif;color:var(--wine);margin:10px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:10000}
+.footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+@media(max-width:700px){.modal{padding:10px}.modal-card{margin:10px auto;padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span id="shopName">Parfum Boutique</span> <small>Nos parfums, en plusieurs tailles</small></div><button type="button" id="cartBtn">Panier <span id="cartCount">0</span></button></header>
+<main>
+<div class="toolbar"><input id="search" type="search" placeholder="Rechercher un parfum, une marque ou une taille…" aria-label="Rechercher"></div>
+<div id="catalogError" class="error"></div>
+<div id="catalog" class="grid"><div class="empty" style="grid-column:1/-1">Chargement des parfums…</div></div>
+</main>
+
+<div id="cartModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+<div class="modal-card">
+<div class="mhead"><h2 id="cartTitle">Votre panier</h2><button type="button" class="secondary" data-close>Fermer</button></div>
+<div id="cartView">
+<div id="cartLines"></div>
+<form id="orderForm" class="form" novalidate>
+<label>Nom et prénom *<input id="fName" maxlength="120" autocomplete="name" required></label>
+<label>Téléphone *<input id="fPhone" type="tel" maxlength="20" autocomplete="tel" placeholder="Ex. 0555 12 34 56" required></label>
+<label>Commune / Wilaya *<input id="fCommune" maxlength="120" required></label>
+<label>Mode de réception *<select id="fDelivery"><option value="home">Livraison à domicile</option><option value="pickup">Retrait en boutique</option></select></label>
+<label id="addrLabel">Adresse de livraison *<input id="fAddress" maxlength="250" autocomplete="street-address"></label>
+<input id="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button id="sendBtn" type="submit">Envoyer la commande</button>
+<div id="orderError" class="error"></div>
+<p class="muted">La boutique vous contactera pour confirmer votre commande.</p>
+</form>
+</div>
+<div id="doneView" class="done hidden"><h3 style="font:22px Georgia,serif;margin:0">Commande envoyée</h3><div class="num" id="doneNum"></div><p class="muted">Gardez ce numéro. La boutique vous contactera au téléphone indiqué pour confirmer.</p><button type="button" data-close>Continuer mes achats</button></div>
+</div>
+</div>
+<div id="toast" class="hidden" role="status"></div>
+<div class="footer" id="footerName">Propulsé par Parfum Boutique</div>
+
+<script>
+const SUPABASE_URL='https://evwxtuucrkdhpuxqxmqb.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_CJL2JWi9-UEHuK8pAjcY9g_IE7pusq0';
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' DA';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEFAULT_SHOP='parfum-boutique';
+const SLUG=(new URLSearchParams(location.search).get('boutique')||DEFAULT_SHOP).trim().toLowerCase();
+const CART_KEY='pb_cart_'+SLUG;
+let SHOP=null;
+let perfumes=[],cart=[],sel={},sending=false,toastTimer=null;
+try{cart=JSON.parse(localStorage.getItem(CART_KEY)||'[]');if(!Array.isArray(cart))cart=[]}catch(e){cart=[]}
+function saveCart(){try{localStorage.setItem(CART_KEY,JSON.stringify(cart))}catch(e){}}
+function byId(id){return perfumes.find(p=>String(p.id)===String(id))}
+function stockOf(p){return p?Math.max(0,Number(p.stock||0)):0}
+function sizeNumber(s){const m=String(s||'').match(/[\d.,]+/);return m?parseFloat(m[0].replace(',','.')):-1}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.add('hidden'),2200)}
+
+/* Catalogue (lecture publique, sans connexion) */
+async function loadCatalog(){
+ const r=await fetch(SUPABASE_URL+'/rest/v1/perfumes?select=id,name,brand,size,price,stock&shop_id=eq.'+encodeURIComponent(SHOP.id)+'&order=name.asc',{headers:{apikey:SUPABASE_PUBLISHABLE_KEY}});
+ if(!r.ok)throw new Error('Erreur '+r.status);
+ const d=await r.json();perfumes=Array.isArray(d)?d:[];
+}
+function groups(){
+ const q=$('search').value.trim().toLowerCase(),map=new Map();
+ perfumes.forEach(p=>{const k=String(p.name||'').trim().toLowerCase()+'|'+String(p.brand||'').trim().toLowerCase();if(!map.has(k))map.set(k,{key:k,name:p.name,brand:p.brand,v:[]});map.get(k).v.push(p)});
+ return [...map.values()].filter(g=>!q||[g.name,g.brand,...g.v.map(p=>p.size)].join(' ').toLowerCase().includes(q)).map(g=>{g.v.sort((a,b)=>sizeNumber(a.size)-sizeNumber(b.size));return g}).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'fr',{sensitivity:'base'}));
+}
+function renderCatalog(){
+ const gs=groups();
+ $('catalog').innerHTML=gs.length?gs.map(g=>{
+  const cur=g.v.find(p=>String(p.id)===String(sel[g.key]))||g.v.find(p=>stockOf(p)>0)||g.v[0],st=stockOf(cur);
+  const chips=g.v.map(p=>`<button type="button" class="chip ${p===cur?'active':''} ${stockOf(p)===0?'out':''}" data-pick="${esc(p.id)}" data-g="${esc(g.key)}">${esc(p.size||'Standard')}</button>`).join('');
+  const badge=st===0?'<span class="badge out">Épuisé</span>':st<=3?`<span class="badge low">Plus que ${st} en stock</span>`:'<span class="badge good">Disponible</span>';
+  return `<div class="card"><div><h3>${esc(g.name)}</h3><span class="muted">${esc(g.brand||'')}</span></div><div class="chips">${chips}</div><div class="price">${money(cur.price)}</div><div>${badge}</div><button type="button" data-add="${esc(cur.id)}" ${st===0?'disabled':''}>${st===0?'Indisponible':'Ajouter au panier'}</button></div>`;
+ }).join(''):'<div class="empty" style="grid-column:1/-1">Aucun parfum ne correspond à votre recherche.</div>';
+}
+$('catalog').addEventListener('click',e=>{
+ const pick=e.target.closest('button[data-pick]');
+ if(pick){const p=byId(pick.dataset.pick);if(p){sel[pick.dataset.g]=p.id;renderCatalog()}return}
+ const add=e.target.closest('button[data-add]');if(add)addToCart(add.dataset.add);
+});
+$('search').addEventListener('input',renderCatalog);
+
+/* Panier */
+function cartCountTotal(){return cart.reduce((s,l)=>s+l.qty,0)}
+function updateCartCount(){$('cartCount').textContent=cartCountTotal()}
+function normalizeCart(){
+ const before=JSON.stringify(cart);
+ cart=cart.map(l=>{const p=byId(l.id);return p?{id:p.id,qty:Math.min(Math.max(1,Math.floor(Number(l.qty)||1)),stockOf(p))}:null}).filter(l=>l&&l.qty>0&&stockOf(byId(l.id))>0);
+ saveCart();updateCartCount();return before!==JSON.stringify(cart);
+}
+function addToCart(id){
+ const p=byId(id);if(!p)return;const line=cart.find(l=>String(l.id)===String(id)),have=line?line.qty:0;
+ if(have+1>stockOf(p)){toast('Stock maximum atteint pour cette taille');return}
+ if(line)line.qty++;else cart.push({id:p.id,qty:1});
+ saveCart();updateCartCount();toast('Ajouté au panier');
+}
+function cartTotal(){return cart.reduce((s,l)=>{const p=byId(l.id);return s+(p?Number(p.price||0)*l.qty:0)},0)}
+function renderCartLines(){
+ const has=cart.length>0;
+ $('orderForm').classList.toggle('hidden',!has);
+ $('cartLines').innerHTML=has?cart.map(l=>{const p=byId(l.id);return `<div class="line"><div><strong>${esc(p.name)}</strong> ${p.size?'<span class="muted">— '+esc(p.size)+'</span>':''}<br><span class="muted">${money(p.price)} l’unité</span><div class="qty"><button type="button" class="secondary" data-dec="${esc(p.id)}" aria-label="Retirer une unité">−</button><strong>${l.qty}</strong><button type="button" class="secondary" data-inc="${esc(p.id)}" aria-label="Ajouter une unité">+</button><button type="button" class="secondary" data-rm="${esc(p.id)}">Retirer</button></div></div><strong>${money(Number(p.price||0)*l.qty)}</strong></div>`}).join('')+`<div class="total"><span>Total</span><span>${money(cartTotal())}</span></div>`:'<div class="empty">Votre panier est vide.</div>';
+}
+$('cartLines').addEventListener('click',e=>{
+ const inc=e.target.closest('[data-inc]'),dec=e.target.closest('[data-dec]'),rm=e.target.closest('[data-rm]');
+ if(inc){addToCart(inc.dataset.inc);renderCartLines()}
+ else if(dec){const l=cart.find(x=>String(x.id)===String(dec.dataset.dec));if(l){l.qty--;if(l.qty<=0)cart=cart.filter(x=>x!==l);saveCart();updateCartCount();renderCartLines()}}
+ else if(rm){cart=cart.filter(x=>String(x.id)!==String(rm.dataset.rm));saveCart();updateCartCount();renderCartLines()}
+});
+function openCart(){normalizeCart();$('cartView').classList.remove('hidden');$('doneView').classList.add('hidden');$('orderError').textContent='';renderCartLines();toggleAddress();$('cartModal').classList.remove('hidden');document.body.style.overflow='hidden'}
+function closeCart(){$('cartModal').classList.add('hidden');document.body.style.overflow=''}
+$('cartBtn').onclick=openCart;
+$('cartModal').addEventListener('click',e=>{if(e.target===$('cartModal')||e.target.closest('[data-close]'))closeCart()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCart()});
+function toggleAddress(){const home=$('fDelivery').value==='home';$('addrLabel').classList.toggle('hidden',!home)}
+$('fDelivery').addEventListener('change',toggleAddress);
+
+/* Envoi de la commande */
+function newOrderNumber(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'CMD-'+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'-'+String(Math.floor(1000+Math.random()*9000))}
+$('orderForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(sending)return;const err=$('orderError');err.textContent='';
+ const name=$('fName').value.trim(),phone=$('fPhone').value.trim(),commune=$('fCommune').value.trim(),delivery=$('fDelivery').value,address=$('fAddress').value.trim();
+ if(!name||!commune){err.textContent='Renseigne ton nom et ta commune.';return}
+ if(phone.replace(/\D/g,'').length<9){err.textContent='Renseigne un numéro de téléphone valide.';return}
+ if(delivery==='home'&&!address){err.textContent='Renseigne l’adresse de livraison.';return}
+ if(!cart.length){err.textContent='Ton panier est vide.';return}
+ if($('website').value){showDone('CMD-'+Date.now().toString().slice(-6));return}
+ sending=true;const btn=$('sendBtn');btn.disabled=true;btn.textContent='Envoi…';
+ try{
+  await loadCatalog();
+  if(normalizeCart()){renderCartLines();renderCatalog();throw new Error('Le stock a changé : ton panier a été mis à jour. Vérifie-le puis renvoie la commande.')}
+  const items=cart.map(l=>{const p=byId(l.id),price=Number(p.price||0);return {id:p.id,name:p.name,brand:p.brand||null,size:p.size||null,qty:l.qty,price,subtotal:price*l.qty}});
+  const number=newOrderNumber();
+  const order={shop_id:SHOP.id,order_number:number,customer_name:name,phone,commune,delivery_method:delivery,address:delivery==='home'?address:null,status:'pending',total:items.reduce((s,i)=>s+i.subtotal,0),items};
+  const r=await fetch(SUPABASE_URL+'/rest/v1/orders',{method:'POST',headers:{apikey:SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(order)});
+  if(!r.ok)throw new Error('La commande n’a pas pu être envoyée. Réessaie dans un instant ou contacte la boutique.');
+  cart=[];saveCart();updateCartCount();$('orderForm').reset();showDone(number);renderCatalog();
+ }catch(ex){err.textContent=ex.message}
+ finally{sending=false;btn.disabled=false;btn.textContent='Envoyer la commande'}
+});
+function showDone(num){$('doneNum').textContent=num;$('cartView').classList.add('hidden');$('doneView').classList.remove('hidden')}
+
+/* Démarrage */
+updateCartCount();
+async function loadShop(){
+ try{const r=await fetch(SUPABASE_URL+'/rest/v1/shops?select=id,name,slug&slug=eq.'+encodeURIComponent(SLUG),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY}});const d=await r.json();SHOP=Array.isArray(d)&&d[0]?d[0]:null}catch(e){SHOP=null}
+ if(SHOP){$('shopName').textContent=SHOP.name;document.title=SHOP.name}
+}
+loadShop().then(()=>{if(!SHOP)throw new Error('nf');return loadCatalog()}).then(()=>{normalizeCart();renderCatalog()}).catch(()=>{$('catalog').innerHTML='';$('cartBtn').disabled=true;$('catalogError').textContent=SHOP?'Impossible de charger les parfums pour le moment. Réessaie dans quelques instants.':'Boutique introuvable. Vérifie l’adresse du lien.'});
+</script>
+</body>
+</html>

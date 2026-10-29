@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Espace employé — Parfum Boutique</title>
+<style>
+:root{--wine:#642d46;--rose:#f6edf1;--paper:#fffdfb;--ink:#211a22;--muted:#746b75;--line:#eadfe4;--green:#24764e;--red:#a53b45;--gold:#c4a36b}*{box-sizing:border-box}body{margin:0;background:#f8f5f4;color:var(--ink);font:15px Arial,sans-serif}button,input,select{font:inherit}button{border:0;border-radius:9px;padding:10px 14px;background:var(--wine);color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.6;cursor:wait}button.secondary{background:#fff;color:var(--wine);border:1px solid var(--line)}button.danger{background:var(--red)}input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink)}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}header{background:var(--wine);color:#fff;padding:22px max(18px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.brand{font:26px Georgia,serif}.brand small{display:block;font:12px Arial;opacity:.8;margin-top:5px}main{max-width:1180px;margin:24px auto;padding:0 18px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:24px 0 14px}.head h2{font:25px Georgia,serif;margin:0}.muted{color:var(--muted);font-size:13px}.panel,.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:18px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;color:var(--wine);font-size:25px;margin-top:8px;overflow-wrap:anywhere}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input,.toolbar select{width:auto;flex:1;min-width:170px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:700px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}th{color:var(--muted);background:#fcf9fa}
+.status{display:inline-block;background:var(--rose);color:var(--wine);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:bold;white-space:nowrap}.status::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px}
+.status.low{background:#fff0d7;color:#7b4c00}.status.good{background:#e7f5eb;color:#22623f}.status.out{background:#fbe1e3;color:#9b2332}
+.st-pending{background:#fdf1c9;color:#7a5a00}.st-received{background:#dff1fb;color:#0b6fa4}.st-confirmed{background:#e4e6fb;color:#2f3a9e}.st-preparing{background:#ffe6d3;color:#9c4a0a}.st-shipped{background:#efe3fa;color:#6a2c9e}.st-ready_for_pickup{background:#d9f3f1;color:#0e6b66}.st-delivered{background:#e2f5e8;color:#1d6b3f}.st-cancelled{background:#fbe1e3;color:#9b2332}.st-unknown{background:#ececec;color:#444}
+.notice{padding:12px 14px;border-radius:10px;background:#fff8e9;border:1px solid #eed8a7;line-height:1.5;font-size:13px;margin-bottom:16px}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.ok{color:var(--green);font-size:13px;white-space:pre-wrap}.hidden{display:none!important}.login{max-width:440px;margin:45px auto}.login h1{font:30px Georgia,serif;margin-top:0}.form{display:grid;gap:12px}.orderitems{color:var(--muted);line-height:1.6}.empty{text-align:center;padding:24px;color:var(--muted)}.footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}.order-status-select{min-width:145px;margin-top:8px}.save-status{margin-top:6px;width:100%}.details-button{width:100%;margin-top:6px;background:#fff;color:var(--wine);border:1px solid var(--line)}
+.stock-form{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;align-items:end}.stock-form label{display:grid;gap:6px;font-size:13px;color:var(--muted)}.stock-form .wide{grid-column:span 2}.product-actions{display:flex;gap:6px;flex-wrap:wrap}.product-actions button{padding:7px 9px;font-size:12px}.stock-note{margin-top:12px}.size-tag{display:inline-block;background:var(--rose);color:var(--wine);border-radius:7px;padding:3px 8px;font-weight:bold;font-size:12px}
+@media(max-width:900px){.stock-form{grid-template-columns:repeat(2,minmax(0,1fr))}.stock-form .wide{grid-column:span 2}}
+.modal{position:fixed;inset:0;background:#0008;z-index:9999;overflow:auto;padding:20px}.modal-card{max-width:700px;margin:30px auto;padding:24px}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}.detail-box{background:#fcf9fa;border:1px solid var(--line);border-radius:10px;padding:12px;overflow-wrap:anywhere}.detail-box strong{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.detail-items{width:100%;min-width:0;margin-top:12px}.detail-items th,.detail-items td{font-size:13px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}@media(max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{padding:13px}.stat strong{font-size:21px}header{align-items:flex-start}.detail-grid{grid-template-columns:1fr}.modal{padding:10px}.modal-card{margin:10px auto;padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span id="shopName">Parfum Boutique</span> <small>Espace employé</small></div><div id="headerActions" class="hidden"><button class="secondary" id="refreshBtn">Actualiser</button> <button id="logoutBtn">Déconnexion</button></div></header>
+<main>
+<section id="loginView" class="login panel"><h1>Connexion employé</h1><p class="muted">Connecte-toi avec le compte employé que le propriétaire de la boutique t’a créé.</p><form id="loginForm" class="form"><label>Adresse e-mail<input id="email" type="email" autocomplete="username" required></label><label>Mot de passe<input id="password" type="password" autocomplete="current-password" required></label><button id="loginBtn" type="submit">Se connecter</button><div id="loginError" class="error"></div></form></section>
+
+<section id="dashboard" class="hidden">
+<div class="head"><div><h2>Tableau de bord</h2><p class="muted" id="lastUpdated">Données en attente de chargement</p></div><span class="status good">Connecté à Supabase</span></div>
+<div class="notice"><strong>Espace employé :</strong> tu peux gérer les commandes et le stock, et ajouter ou modifier des références. La suppression et les ventes sont réservées au propriétaire.</div>
+<div class="stats"><div class="stat"><span>Références au catalogue</span><strong id="kProducts">—</strong></div><div class="stat"><span>Unités en stock</span><strong id="kStock">—</strong></div><div class="stat"><span>Commandes enregistrées</span><strong id="kOrders">—</strong></div><div class="stat" id="revenueCard"><span>Ventes non annulées</span><strong id="kRevenue">—</strong></div></div>
+
+<div class="head"><h2>Gestion du stock par taille</h2><span class="muted">Chaque parfum + taille est une référence indépendante</span></div>
+<div class="panel" style="margin-bottom:14px">
+<h3 id="productFormTitle" style="margin-top:0">Ajouter une référence</h3>
+<form id="productForm" class="stock-form" novalidate>
+<input type="hidden" id="productId">
+<label class="wide">Nom du parfum *<input id="productName" required maxlength="150" placeholder="Ex. Dior Sauvage"></label>
+<label>Marque<input id="productBrand" maxlength="100" placeholder="Ex. Dior"></label>
+<label>Taille<input id="productSize" list="sizeList" maxlength="30" placeholder="Ex. 100 ml"><datalist id="sizeList"><option value="10 ml"><option value="30 ml"><option value="50 ml"><option value="60 ml"><option value="75 ml"><option value="80 ml"><option value="100 ml"><option value="125 ml"><option value="150 ml"><option value="200 ml"></datalist></label>
+<label>Prix de vente (DA) *<input id="productPrice" type="number" min="0" step="0.01" required placeholder="2500"></label>
+<label>Stock *<input id="productStock" type="number" min="0" step="1" required placeholder="10"></label>
+<div class="wide" style="display:flex;gap:8px;flex-wrap:wrap"><button id="saveProductBtn" type="submit">Ajouter au catalogue</button><button id="cancelEditBtn" type="button" class="secondary hidden">Annuler la modification</button></div>
+</form>
+<div id="stockError" class="error stock-note"></div><div id="stockOk" class="ok stock-note"></div>
+<p class="muted stock-note">Pour ajouter une autre taille du même parfum, utilise le bouton « + Taille » dans le tableau : le nom et la marque sont recopiés, tu choisis la taille, le prix et le stock. Modifier le stock d’une taille ne touche jamais les autres tailles.</p>
+</div>
+
+<div class="toolbar"><input id="searchProduct" placeholder="Rechercher un parfum, une marque ou une taille…"><select id="stockFilter"><option value="all">Tous les stocks</option><option value="low">Stock faible (1 à 3)</option><option value="out">Épuisés (0)</option><option value="available">Disponibles (plus de 3)</option></select></div>
+<div class="panel tablewrap"><table><thead><tr><th>Parfum</th><th>Marque</th><th>Taille</th><th>Prix</th><th>Stock</th><th>Disponibilité</th><th>Actions</th></tr></thead><tbody id="productsRows"><tr><td colspan="7" class="empty">Chargement…</td></tr></tbody></table></div>
+<p class="muted" id="productsCount"></p>
+
+<div class="head"><h2>Commandes clients</h2><span class="muted" id="ordersCount"></span></div>
+<div class="toolbar"><input id="searchOrder" placeholder="Rechercher n° commande, client, téléphone…"><select id="statusFilter"><option value="all">Tous les statuts</option><option value="pending">En attente</option><option value="received">Reçue</option><option value="confirmed">Confirmée</option><option value="preparing">En préparation</option><option value="shipped">Expédiée</option><option value="ready_for_pickup">Prête au retrait</option><option value="delivered">Livrée</option><option value="cancelled">Annulée</option></select></div>
+<div class="panel tablewrap"><table><thead><tr><th>Commande / date</th><th>Client / téléphone</th><th>Livraison</th><th>Articles</th><th>Total</th><th>Statut / actions</th></tr></thead><tbody id="ordersRows"><tr><td colspan="6" class="empty">Chargement…</td></tr></tbody></table></div>
+<div id="dataError" class="error"></div>
+</section>
+</main>
+
+<div id="orderDetailsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="detailsTitle"><div class="panel modal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 id="detailsTitle" style="margin:0">Détails de la commande</h2><button type="button" class="secondary" data-close-details>Fermer</button></div><div id="orderDetailsContent" style="margin-top:12px;line-height:1.6"></div><div class="modal-actions"><button type="button" class="secondary" data-close-details>Fermer la fiche</button></div></div></div>
+<div class="footer">Parfum Boutique • Espace employé • Accès réservé aux employés</div>
+
+<script>
+const SUPABASE_URL='https://evwxtuucrkdhpuxqxmqb.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_CJL2JWi9-UEHuK8pAjcY9g_IE7pusq0';
+const ROLE='employee';const PLATFORM_ADMIN='sbrryndrss@gmail.com';const DEFAULT_SHOP='parfum-boutique';
+const SLUG=(new URLSearchParams(location.search).get('boutique')||DEFAULT_SHOP).trim().toLowerCase();
+let SHOP=null, shopReady=Promise.resolve();
+let accessToken=null, refreshToken=null, allOrders=[], allPerfumes=[];
+const busy=new Set();
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toLocaleString('fr-FR',{maximumFractionDigits:2})+' DA';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Statuts ---------- */
+const STATUSES=[['pending','En attente'],['received','Reçue'],['confirmed','Confirmée'],['preparing','En préparation'],['shipped','Expédiée'],['ready_for_pickup','Prête au retrait'],['delivered','Livrée'],['cancelled','Annulée']];
+const STATUS_LABEL=Object.fromEntries(STATUSES);
+const LEGACY_STATUS={'en attente':'pending','reçue':'received','recue':'received','confirmée':'confirmed','confirmee':'confirmed','en préparation':'preparing','en preparation':'preparing','expédiée':'shipped','expediee':'shipped','prête au retrait':'ready_for_pickup','prete au retrait':'ready_for_pickup','livrée':'delivered','livree':'delivered','annulée':'cancelled','annulee':'cancelled'};
+function statusKey(s){const v=String(s??'pending').trim()||'pending';if(STATUS_LABEL[v])return v;return LEGACY_STATUS[v.toLowerCase()]||v}
+function prettyStatus(s){const k=statusKey(s);return STATUS_LABEL[k]||String(s)}
+function statusBadge(s){const k=statusKey(s);return `<span class="status st-${STATUS_LABEL[k]?k:'unknown'}">${esc(prettyStatus(s))}</span>`}
+
+/* ---------- Session et API ---------- */
+function authHeaders(){return {'apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}}
+function errMsg(text,status){try{const j=JSON.parse(text);return j.message||j.msg||j.hint||j.error_description||text}catch(e){return text||('Erreur HTTP '+status)}}
+async function tryRefresh(){
+ if(!refreshToken)return false;
+ try{const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'apikey':SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refreshToken})});
+  if(!r.ok)return false;const d=await r.json();if(!d.access_token)return false;accessToken=d.access_token;refreshToken=d.refresh_token||refreshToken;return true}catch(e){return false}
+}
+function showLogin(message){
+ accessToken=null;refreshToken=null;allOrders=[];allPerfumes=[];closeOrderDetails();
+ $('dashboard').classList.add('hidden');$('headerActions').classList.add('hidden');$('loginView').classList.remove('hidden');$('password').value='';$('loginError').textContent=message||'';
+}
+async function api(path,options={},retry=true){
+ const r=await fetch(SUPABASE_URL+path,{...options,headers:{...authHeaders(),...(options.headers||{})}});
+ if(r.status===401){
+  if(retry&&await tryRefresh())return api(path,options,false);
+  showLogin('Ta session a expiré. Reconnecte-toi.');throw new Error('Session expirée. Reconnecte-toi.');
+ }
+ if(!r.ok)throw new Error(errMsg(await r.text(),r.status));
+ if(r.status===204)return null;
+ return r.json();
+}
+
+/* ---------- Connexion ---------- */
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();$('loginError').textContent='';$('loginBtn').disabled=true;$('loginBtn').textContent='Connexion…';
+ try{
+  await shopReady;if(!SHOP)throw new Error('Boutique introuvable. Vérifie l’adresse de la page (…?boutique=nom-de-la-boutique).');
+  const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'apikey':SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});
+  const d=await r.json();if(!r.ok)throw new Error(d.msg||d.message||d.error_description||'Connexion refusée');
+  accessToken=d.access_token;refreshToken=d.refresh_token||null;
+  const who=String((d.user&&d.user.email)||'').toLowerCase();
+  if(who!==PLATFORM_ADMIN){
+   let rows=[];try{rows=await api('/rest/v1/shop_members?select=role&shop_id=eq.'+encodeURIComponent(SHOP.id)+'&email=eq.'+encodeURIComponent(who))}catch(e){rows=[]}
+   const role=rows&&rows[0]&&rows[0].role;
+   if(!role){accessToken=null;refreshToken=null;throw new Error('Ce compte n’a pas accès à cette boutique.')}
+   if(ROLE==='admin'&&role!=='owner'){accessToken=null;refreshToken=null;throw new Error('Ce compte n’est pas propriétaire de cette boutique. Utilise la page employé.')}
+  }
+  $('loginView').classList.add('hidden');$('dashboard').classList.remove('hidden');$('headerActions').classList.remove('hidden');
+  await refreshData();
+ }catch(err){$('loginError').textContent='Connexion impossible : '+err.message+'\nVérifie le compte Auth et les règles RLS.'}
+ finally{$('loginBtn').disabled=false;$('loginBtn').textContent='Se connecter'}
+});
+$('logoutBtn').onclick=()=>showLogin('');
+$('refreshBtn').onclick=refreshData;
+$('searchOrder').addEventListener('input',renderOrders);$('statusFilter').addEventListener('change',renderOrders);
+$('searchProduct').addEventListener('input',renderProducts);$('stockFilter').addEventListener('change',renderProducts);
+$('productForm').addEventListener('submit',saveProduct);$('cancelEditBtn').addEventListener('click',resetProductForm);
+
+/* ---------- Chargement ---------- */
+function updateKpis(){
+ $('kProducts').textContent=allPerfumes.length;
+ $('kStock').textContent=allPerfumes.reduce((s,p)=>s+Number(p.stock||0),0);
+ $('kOrders').textContent=allOrders.length;
+ $('kRevenue').textContent=money(allOrders.filter(o=>statusKey(o.status)!=='cancelled').reduce((s,o)=>s+Number(o.total||0),0));
+}
+async function refreshData(){
+ $('dataError').textContent='';$('refreshBtn').disabled=true;
+ try{
+  const [ps,os]=await Promise.all([
+   api('/rest/v1/perfumes?select=id,name,brand,size,price,stock&shop_id=eq.'+encodeURIComponent(SHOP.id)+'&order=name.asc'),
+   api('/rest/v1/orders?select=id,order_number,customer_name,phone,commune,delivery_method,address,status,total,items,created_at&shop_id=eq.'+encodeURIComponent(SHOP.id)+'&order=created_at.desc')
+  ]);
+  allPerfumes=ps||[];allOrders=os||[];
+  renderProducts();renderOrders();updateKpis();
+  $('lastUpdated').textContent='Dernière actualisation : '+new Date().toLocaleString('fr-FR');
+ }catch(err){$('dataError').textContent='Impossible de charger les données : '+err.message+'\nSi une erreur 401/403 apparaît, vérifie la politique RLS et que ton compte est autorisé à consulter les commandes. Si le message parle de la colonne « size », vérifie qu’elle existe dans la table perfumes.'}
+ finally{$('refreshBtn').disabled=false}
+}
+
+/* ---------- Catalogue : références parfum + taille ---------- */
+function sizeNumber(s){const m=String(s||'').match(/[\d.,]+/);return m?parseFloat(m[0].replace(',','.')):-1}
+function cleanSize(v){
+ let s=String(v||'').trim().replace(/\s+/g,' ');
+ const m=s.match(/^(\d+(?:[.,]\d+)?)\s*(ml|cl)$/i);
+ if(m)s=m[1].replace(',','.')+' '+m[2].toLowerCase();
+ return s;
+}
+function sortedPerfumes(list){
+ return [...list].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'fr',{sensitivity:'base'})||String(a.brand||'').localeCompare(String(b.brand||''),'fr',{sensitivity:'base'})||(sizeNumber(a.size)-sizeNumber(b.size))||String(a.size||'').localeCompare(String(b.size||''),'fr'));
+}
+function stockBadge(stock){return stock===0?'<span class="status out">Épuisé</span>':stock<=3?'<span class="status low">Stock faible</span>':'<span class="status good">Disponible</span>'}
+function renderProducts(){
+ const q=($('searchProduct').value||'').trim().toLowerCase(),filter=$('stockFilter').value||'all';
+ const filtered=sortedPerfumes(allPerfumes.filter(p=>{
+  const stock=Number(p.stock||0),hay=[p.name,p.brand,p.size].join(' ').toLowerCase();
+  return (!q||hay.includes(q))&&(filter==='all'||(filter==='low'&&stock>0&&stock<=3)||(filter==='out'&&stock===0)||(filter==='available'&&stock>3));
+ }));
+ $('productsRows').innerHTML=filtered.length?filtered.map(p=>{
+  const stock=Number(p.stock||0),id=esc(p.id);
+  return `<tr data-product-id="${id}"><td><strong>${esc(p.name)}</strong></td><td>${esc(p.brand||'—')}</td><td>${p.size?'<span class="size-tag">'+esc(p.size)+'</span>':'<span class="muted">—</span>'}</td><td>${money(p.price)}</td><td><strong>${stock}</strong><div class="product-actions" style="margin-top:6px"><button type="button" class="secondary" data-act="dec" data-id="${id}" aria-label="Retirer 1 unité">− 1</button><button type="button" class="secondary" data-act="inc" data-id="${id}" aria-label="Ajouter 1 unité">+ 1</button></div></td><td>${stockBadge(stock)}</td><td><div class="product-actions"><button type="button" class="secondary" data-act="edit" data-id="${id}">Modifier</button><button type="button" class="secondary" data-act="size" data-id="${id}">+ Taille</button>${ROLE==='admin'?`<button type="button" class="danger" data-act="del" data-id="${id}">Supprimer</button>`:''}</div></td></tr>`;
+ }).join(''):'<tr><td colspan="7" class="empty">Aucune référence ne correspond à la recherche.</td></tr>';
+ $('productsCount').textContent=filtered.length+' référence(s) affichée(s) sur '+allPerfumes.length;
+}
+$('productsRows').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-act]');if(!b)return;
+ const id=b.dataset.id,act=b.dataset.act;
+ if(act==='dec')adjustStock(id,-1,b);else if(act==='inc')adjustStock(id,1,b);
+ else if(act==='edit')editProduct(id);else if(act==='size')addSizeFrom(id);else if(act==='del')deleteProduct(id,b);
+});
+function setFormMode(edit,title){
+ $('productFormTitle').textContent=title;
+ $('saveProductBtn').textContent=edit?'Enregistrer les modifications':'Ajouter au catalogue';
+ $('cancelEditBtn').classList.toggle('hidden',!edit);
+}
+function resetProductForm(){$('productForm').reset();$('productId').value='';setFormMode(false,'Ajouter une référence');$('stockError').textContent='';}
+function editProduct(id){
+ const p=allPerfumes.find(x=>String(x.id)===String(id));if(!p)return;
+ $('productId').value=p.id;$('productName').value=p.name||'';$('productBrand').value=p.brand||'';$('productSize').value=p.size||'';$('productPrice').value=Number(p.price||0);$('productStock').value=Number(p.stock||0);
+ setFormMode(true,'Modifier : '+p.name+(p.size?' — '+p.size:''));$('stockError').textContent='';$('stockOk').textContent='';
+ $('productForm').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function addSizeFrom(id){
+ const p=allPerfumes.find(x=>String(x.id)===String(id));if(!p)return;
+ $('productForm').reset();$('productId').value='';$('productName').value=p.name||'';$('productBrand').value=p.brand||'';
+ setFormMode(false,'Ajouter une taille pour : '+p.name);$('stockError').textContent='';$('stockOk').textContent='';
+ $('productForm').scrollIntoView({behavior:'smooth',block:'center'});$('productSize').focus();
+}
+async function saveProduct(e){
+ e.preventDefault();$('stockError').textContent='';$('stockOk').textContent='';
+ const id=$('productId').value,name=$('productName').value.trim(),brand=$('productBrand').value.trim(),size=cleanSize($('productSize').value),priceTxt=$('productPrice').value,stockTxt=$('productStock').value,price=Number(priceTxt),stock=Number(stockTxt);
+ if(!name||priceTxt===''||!Number.isFinite(price)||price<0||stockTxt===''||!Number.isInteger(stock)||stock<0){$('stockError').textContent='Vérifie le nom, le prix et le stock (nombre entier positif ou nul).';return}
+ const same=allPerfumes.find(p=>String(p.id)!==String(id)&&String(p.name||'').trim().toLowerCase()===name.toLowerCase()&&String(p.brand||'').trim().toLowerCase()===brand.toLowerCase()&&String(p.size||'').trim().toLowerCase()===size.toLowerCase());
+ if(same){$('stockError').textContent='Cette référence existe déjà (même parfum, même marque, même taille). Modifie-la au lieu d’en créer une autre, ou choisis une autre taille.';return}
+ const btn=$('saveProductBtn');btn.disabled=true;btn.textContent='Enregistrement…';
+ const body={name,brand:brand||null,size:size||null,price,stock,shop_id:SHOP.id};
+ try{
+  let result;
+  if(id){result=await api('/rest/v1/perfumes?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(body)});
+   if(!Array.isArray(result)||!result.length)throw new Error('Aucune référence modifiée. Vérifie la politique RLS UPDATE de la table perfumes.')}
+  else{result=await api('/rest/v1/perfumes',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(body)});
+   if(!Array.isArray(result)||!result.length)throw new Error('La référence n’a pas été ajoutée. Vérifie la politique RLS INSERT de la table perfumes.')}
+  const label=name+(size?' — '+size:'');
+  resetProductForm();await refreshData();$('stockOk').textContent=id?('Référence modifiée : '+label):('Référence ajoutée : '+label);
+ }catch(err){$('stockError').textContent='Enregistrement impossible : '+err.message+'\nVérifie les autorisations Supabase de la table perfumes.'}
+ finally{btn.disabled=false;btn.textContent=$('productId').value?'Enregistrer les modifications':'Ajouter au catalogue'}
+}
+async function adjustStock(id,delta,btn){
+ const key='stock:'+id;if(busy.has(key))return;
+ const p=allPerfumes.find(x=>String(x.id)===String(id));if(!p)return;
+ const hasStock=p.stock!==null&&p.stock!==undefined,current=Number(p.stock||0),next=current+delta;
+ if(next<0){alert('Le stock ne peut pas être négatif.');return}
+ busy.add(key);const row=btn.closest('tr');row&&row.querySelectorAll('button[data-act]').forEach(b=>b.disabled=true);
+ try{
+  // Le filtre sur l'ancien stock évite d'écraser une modification faite ailleurs entre-temps.
+  const guard=hasStock?'&stock=eq.'+current:'&stock=is.null';
+  const result=await api('/rest/v1/perfumes?id=eq.'+encodeURIComponent(id)+guard,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({stock:next})});
+  if(!Array.isArray(result)||!result.length){busy.delete(key);await refreshData();alert('Aucun stock modifié : soit le stock a changé entre-temps (données rechargées), soit la politique RLS UPDATE de la table perfumes bloque la modification.');return}
+  const ix=allPerfumes.findIndex(x=>String(x.id)===String(id));if(ix>=0)allPerfumes[ix]={...allPerfumes[ix],...result[0]};
+  renderProducts();updateKpis();
+ }catch(err){alert('Impossible de modifier le stock : '+err.message);renderProducts()}
+ finally{busy.delete(key)}
+}
+async function deleteProduct(id,btn){
+ const p=allPerfumes.find(x=>String(x.id)===String(id));if(!p)return;
+ const label=p.name+(p.size?' — '+p.size:'');
+ if(!confirm('Supprimer « '+label+' » du catalogue ? Cette action est irréversible. Les anciennes commandes ne sont pas modifiées.'))return;
+ btn.disabled=true;
+ try{
+  const result=await api('/rest/v1/perfumes?id=eq.'+encodeURIComponent(id),{method:'DELETE',headers:{Prefer:'return=representation'}});
+  if(!Array.isArray(result)||!result.length)throw new Error('Aucune référence supprimée. Vérifie la politique RLS DELETE de la table perfumes.');
+  allPerfumes=allPerfumes.filter(x=>String(x.id)!==String(id));
+  if(String($('productId').value)===String(id))resetProductForm();
+  renderProducts();updateKpis();$('stockOk').textContent='Référence supprimée : '+label;
+ }catch(err){btn.disabled=false;alert('Suppression impossible : '+err.message+'\nSi la suppression est refusée, mets plutôt le stock à 0.')}
+}
+
+/* ---------- Commandes ---------- */
+function formatDate(value){if(!value)return 'Date inconnue';const d=new Date(value);return Number.isNaN(d.getTime())?'Date inconnue':d.toLocaleString('fr-FR')}
+function getItems(o){
+ let it=o.items;
+ if(typeof it==='string'){try{it=JSON.parse(it)}catch(e){it=[]}}
+ if(it&&!Array.isArray(it)&&typeof it==='object')it=Array.isArray(it.items)?it.items:Object.values(it);
+ return Array.isArray(it)?it.filter(x=>x&&typeof x==='object'):[];
+}
+function itemName(i){return i.name||i.product_name||i.perfume_name||'Article'}
+function itemSize(i){return String(i.size??i.taille??i.volume??'').trim()}
+function itemQty(i){const q=Number(i.qty??i.quantity??1);return Number.isFinite(q)?q:1}
+function itemLine(i){const s=itemSize(i);return esc(itemName(i))+(s?' <span class="size-tag">'+esc(s)+'</span>':'')+' × '+itemQty(i)}
+function renderOrders(){
+ const q=$('searchOrder').value.trim().toLowerCase(),st=$('statusFilter').value;
+ const filtered=allOrders.filter(o=>{const hay=[o.order_number,o.id,o.customer_name,o.phone,o.commune].join(' ').toLowerCase();return (!q||hay.includes(q))&&(st==='all'||statusKey(o.status)===st)});
+ $('ordersCount').textContent=filtered.length+' commande(s) affichée(s)';
+ $('ordersRows').innerHTML=filtered.length?filtered.map(o=>{
+  const items=getItems(o),num=o.order_number||('CMD-'+o.id),delivery=o.delivery_method==='home'?'À domicile':'Retrait',key=statusKey(o.status);
+  let options=STATUSES.map(([value,label])=>`<option value="${value}" ${key===value?'selected':''}>${label}</option>`).join('');
+  if(!STATUS_LABEL[key])options=`<option value="${esc(o.status)}" selected>${esc(o.status)}</option>`+options;
+  return `<tr data-order-id="${esc(o.id)}"><td><strong>${esc(num)}</strong><br><span class="muted">${esc(formatDate(o.created_at))}</span><br><button type="button" class="details-button" data-details="${esc(o.id)}">Voir la fiche</button></td><td><strong>${esc(o.customer_name)}</strong><br>${esc(o.phone)}<br><span class="muted">${esc(o.commune)}</span></td><td>${esc(delivery)}${o.address?'<br><span class="muted">'+esc(o.address)+'</span>':''}</td><td class="orderitems">${items.map(itemLine).join('<br>')||'—'}</td><td><strong>${money(o.total)}</strong></td><td>${statusBadge(o.status)}<div style="margin-top:8px"><select class="order-status-select" aria-label="Nouveau statut de la commande">${options}</select><button type="button" class="save-status" data-save-status>Enregistrer</button></div></td></tr>`;
+ }).join(''):'<tr><td colspan="6" class="empty">Aucune commande ne correspond aux filtres.</td></tr>';
+}
+$('ordersRows').addEventListener('click',e=>{
+ const d=e.target.closest('button[data-details]');if(d){openOrderDetails(d.dataset.details);return}
+ const s=e.target.closest('button[data-save-status]');if(s)updateOrderStatus(s);
+});
+function openOrderDetails(id){
+ const o=allOrders.find(x=>String(x.id)===String(id));if(!o){alert('Commande introuvable. Actualise le tableau et réessaie.');return}
+ const items=getItems(o),num=o.order_number||('CMD-'+o.id),delivery=o.delivery_method==='home'?'À domicile':'Retrait en boutique';
+ const itemRows=items.length?items.map(i=>{
+  const qty=itemQty(i),hasPrice=(i.price??i.unit_price)!==undefined&&(i.price??i.unit_price)!==null&&(i.price??i.unit_price)!=='',price=Number(i.price??i.unit_price??0);
+  const explicit=i.subtotal??i.total,sub=explicit!==undefined&&explicit!==null&&explicit!==''?money(explicit):(hasPrice?money(qty*price):'—');
+  return `<tr><td>${esc(itemName(i))}</td><td>${esc(itemSize(i)||'—')}</td><td>${qty}</td><td>${hasPrice?money(price):'—'}</td><td>${sub}</td></tr>`;
+ }).join(''):'<tr><td colspan="5" class="empty">Aucun détail d’article enregistré dans cette commande.</td></tr>';
+ $('orderDetailsContent').innerHTML=`<div class="detail-grid"><div class="detail-box"><strong>Numéro de commande</strong>${esc(num)}</div><div class="detail-box"><strong>Date</strong>${esc(formatDate(o.created_at))}</div><div class="detail-box"><strong>Nom du client</strong>${esc(o.customer_name||'—')}</div><div class="detail-box"><strong>Téléphone</strong>${esc(o.phone||'—')}</div><div class="detail-box"><strong>Commune / Wilaya</strong>${esc(o.commune||'—')}</div><div class="detail-box"><strong>Mode de livraison</strong>${esc(delivery)}</div><div class="detail-box" style="grid-column:1/-1"><strong>Adresse de livraison</strong>${esc(o.address||'Non renseignée / retrait en boutique')}</div><div class="detail-box"><strong>Statut actuel</strong>${statusBadge(o.status)}</div><div class="detail-box"><strong>Total de la commande</strong>${money(o.total)}</div></div><h3>Articles commandés</h3><div class="tablewrap"><table class="detail-items"><thead><tr><th>Article</th><th>Taille</th><th>Qté</th><th>Prix unitaire</th><th>Sous-total</th></tr></thead><tbody>${itemRows}</tbody></table></div><p class="muted">Les informations des articles sont affichées telles qu’enregistrées dans Supabase. Un tiret (—) signifie que l’information n’existe pas dans cette commande (par exemple les anciennes commandes sans taille).</p>`;
+ $('orderDetailsModal').classList.remove('hidden');document.body.style.overflow='hidden';
+ const c=$('orderDetailsModal').querySelector('[data-close-details]');c&&c.focus();
+}
+function closeOrderDetails(){$('orderDetailsModal').classList.add('hidden');document.body.style.overflow=''}
+$('orderDetailsModal').addEventListener('click',e=>{if(e.target===$('orderDetailsModal')||e.target.closest('[data-close-details]'))closeOrderDetails()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOrderDetails()});
+async function updateOrderStatus(button){
+ const row=button.closest('tr'),orderId=row&&row.dataset.orderId,select=row&&row.querySelector('.order-status-select');
+ if(!orderId||!select){alert('Impossible de trouver la commande.');return}
+ const newStatus=select.value,previousText=button.textContent,order=allOrders.find(o=>String(o.id)===String(orderId));
+ if(!order){alert('Commande introuvable. Actualise le tableau et réessaie.');return}
+ if(statusKey(order.status)===newStatus){alert('Le statut est déjà « '+prettyStatus(newStatus)+' ».');return}
+ button.disabled=true;button.textContent='Enregistrement…';
+ try{
+  const result=await api('/rest/v1/orders?id=eq.'+encodeURIComponent(orderId),{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:newStatus})});
+  if(!Array.isArray(result)||result.length===0)throw new Error('Aucune commande modifiée. Vérifie la politique RLS UPDATE de la table orders dans Supabase.');
+  const index=allOrders.findIndex(o=>String(o.id)===String(orderId));if(index!==-1)allOrders[index]={...allOrders[index],...result[0]};
+  renderOrders();updateKpis();$('dataError').textContent='';alert('Statut mis à jour : '+prettyStatus(newStatus));
+ }catch(err){alert('Impossible de modifier le statut : '+err.message+'\nVérifie que ton compte administrateur est autorisé à modifier cette commande dans Supabase.');button.disabled=false;button.textContent=previousText}
+}
+async function loadShop(){
+ try{const r=await fetch(SUPABASE_URL+'/rest/v1/shops?select=id,name,slug&slug=eq.'+encodeURIComponent(SLUG),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY}});const d=await r.json();SHOP=Array.isArray(d)&&d[0]?d[0]:null}catch(e){SHOP=null}
+ if(SHOP){$('shopName').textContent=SHOP.name;document.title=document.title.split(' — ')[0]+' — '+SHOP.name}
+ else{$('shopName').textContent='Boutique introuvable';$('loginError').textContent='Boutique introuvable. Vérifie l’adresse de la page (…?boutique=nom-de-la-boutique).';$('loginBtn').disabled=true}
+}
+if(ROLE!=='admin')$('revenueCard').classList.add('hidden');
+shopReady=loadShop();
+</script>
+</body></html>
